@@ -7,55 +7,35 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- 1.	Создай класс FileManager с конструктором FileManager(Path rootPath) throws IOException
- 2.	Объяви и проинициализируй приватные переменные класса:
- 2.1. Path rootPath – корневой путь директории, файлы которой нас интересуют
- 2.2. List<Path> fileList – список относительных путей файлов внутри rootPath
- 3.	Создай геттер для fileList
- 4.	Реализуй метод void collectFileList(Path path) throws IOException, который должен:
- 4.1. Проверить, если переданный путь path является обычным файлом (используй метод
- Files.isRegularFile), то получить его относительный путь относительно rootPath
- и добавить его в список fileList.
-
- 4.2. Если переданный путь path, является директорией (узнать это поможет метод
- Files.isDirectory), то пройтись по всему содержимому директории и вызвать
- collectFileList(Path path), передав в path обнаруженные элементы.
- Пройтись по всему содержимому директории можно предварительно получив DirectoryStream с помощью метода
- newDirectoryStream класса Files. Не забудь закрыть созданный DirectoryStream.
-
- 5.	Добавь вызов метода collectFileList(rootPath) в конструкторе FileManager.
- 6.	Примени все свом знания об инкапсуляции к этому классу.
- */
-public class FileManager
-{
+public class FileManager {
     private Path rootPath;
-    private List<Path> fileList = new ArrayList<>();
+    private List<Path> fileList;
 
-    public FileManager(Path rootPath) throws IOException
-    {
+    public FileManager(Path rootPath) throws IOException {
         this.rootPath = rootPath;
-        collectFileList(this.rootPath);
+        this.fileList = new ArrayList<>();
+        collectFileList(rootPath);
     }
 
-    public List<Path> getFileList()
-    {
+    public List<Path> getFileList() {
         return fileList;
     }
 
-    private void collectFileList(Path path) throws IOException
-    {
-        if (Files.isRegularFile(path))
-        {
-            Path file = rootPath.relativize(path);
-            fileList.add(file);
+    private void collectFileList(Path path) throws IOException {
+        // Добавляем только файлы
+        if (Files.isRegularFile(path)) {
+            Path relativePath = rootPath.relativize(path);
+            fileList.add(relativePath);
         }
-        else if (Files.isDirectory(path))
-        {
-            try(DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path))
-            {
-                for (Path entry : directoryStream)
-                    collectFileList(entry);
+
+        // Добавляем содержимое директории
+        if (Files.isDirectory(path)) {
+            // Рекурсивно проходимся по всему содержмому директории
+            // Чтобы не писать код по вызову close для DirectoryStream, обернем вызов newDirectoryStream в try-with-resources
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
+                for (Path file : directoryStream) {
+                    collectFileList(file);
+                }
             }
         }
     }

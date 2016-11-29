@@ -6,7 +6,10 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
- * Created by User on 29.11.2016.
+ 12.1.	Напиши реализацию класса RedoAction:
+ 12.1.1.	Добавь в класс поле View. Добавь его инициализацию в конструкторе.
+ 12.1.2.	Реализуй метод actionPerformed(ActionEvent actionEvent), он должен вызывать метод
+ redo() у представления.
  */
 public class RedoAction extends AbstractAction
 {
@@ -20,6 +23,6 @@ public class RedoAction extends AbstractAction
     @Override
     public void actionPerformed(ActionEvent e)
     {
-
+        view.redo();
     }
 }

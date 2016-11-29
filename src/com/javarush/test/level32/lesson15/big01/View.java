@@ -223,4 +223,14 @@ public class View extends JFrame implements ActionListener{
     {
         return undoManager.canRedo();
     }
+
+    /**
+     13.1.	Добавь в представление метод boolean isHtmlTabSelected(). Он должен возвращать
+     true, если выбрана вкладка, отображающая html в панели вкладок (подсказка: ее индекс 0).
+     */
+
+    public boolean isHtmlTabSelected()
+    {
+        return tabbedPane.getSelectedIndex() == 0;
+    }
 }

@@ -2,8 +2,10 @@ package com.javarush.test.level32.lesson15.big01;
 
 import com.javarush.test.level32.lesson15.big01.listeners.FrameListener;
 import com.javarush.test.level32.lesson15.big01.listeners.TabbedPaneChangeListener;
+import com.javarush.test.level32.lesson15.big01.listeners.UndoListener;
 
 import javax.swing.*;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +15,32 @@ public class View extends JFrame implements ActionListener{
     private JTabbedPane tabbedPane = new JTabbedPane();
     private JTextPane htmlTextPane = new JTextPane();
     private JEditorPane plainTextPane = new JEditorPane();
+    private UndoManager undoManager = new UndoManager();
+    private UndoListener undoListener = new UndoListener(undoManager);
+
+    /**
+     11.4.	Добавь в представление поле UndoListener undoListener, проинициализируй его
+     используя undoManager.
+     */
+
+    /**
+     9.2.	Добавь конструктор класса View. Он должен устанавливать внешний вид и поведение
+     (look and feel) нашего приложения такими же, как это определено в системе.
+     Конструктор не должен кидать исключений, только логировать их с помощью
+     ExceptionHandler. Подсказа: для реализации задания используй класс UIManager.
+     */
+
+    public View()
+    {
+        try
+        {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }
+        catch (Exception e)
+        {
+            ExceptionHandler.log(e);
+        }
+    }
 
     public Controller getController() {
         return controller;
@@ -55,11 +83,26 @@ public class View extends JFrame implements ActionListener{
     /**
      4.1.	Объяви методы initMenuBar() и initEditor() в классе View. Они будут отвечать за
      инициализацию меню и панелей редактора.
+
+     9.1.	Реализуй метод initMenuBar(). Он должен:
+     9.1.1.	Создавать новый объект типа JMenuBar. Это и будет наша панель меню.
+     9.1.2.	С помощью MenuHelper инициализировать меню в следующем порядке: Файл,
+     Редактировать, Стиль, Выравнивание, Цвет, Шрифт и Помощь.
+     9.1.3.	Добавлять в верхнюю часть панели контента текущего фрейма нашу панель меню,
+     аналогично тому, как это мы делали с панелью вкладок.
      */
 
     public void initMenuBar()
     {
-
+        JMenuBar menuBar = new JMenuBar();
+        MenuHelper.initFileMenu(this, menuBar);
+        MenuHelper.initEditMenu(this, menuBar);
+        MenuHelper.initStyleMenu(this, menuBar);
+        MenuHelper.initAlignMenu(this, menuBar);
+        MenuHelper.initColorMenu(this, menuBar);
+        MenuHelper.initFontMenu(this, menuBar);
+        MenuHelper.initHelpMenu(this, menuBar);
+        getContentPane().add(menuBar, BorderLayout.NORTH);
     }
 
     /**
@@ -122,5 +165,62 @@ public class View extends JFrame implements ActionListener{
     public void selectedTabChanged()
     {
 
+    }
+
+    /**
+     11.5.	Добавь в представление методы:
+     11.5.1.	void undo() - отменяет последнее действие. Реализуй его используя undoManager.
+     Метод не должен кидать исключений, логируй их.
+     11.5.2.	void redo() - возвращает ранее отмененное действие. Реализуй его по аналогии с
+     предыдущим пунктом.
+
+     11.5.3.	Реализуй методы boolean canUndo() и boolean canRedo() используя undoManager.
+     11.5.4.	Реализуй геттер для undoListener.
+     11.5.5.	Добавь и реализуй метод void resetUndo(), который должен сбрасывать все правки в
+     менеджере undoManager.
+     */
+
+    public void resetUndo()
+    {
+        undoManager.discardAllEdits();
+    }
+
+    public void undo()
+    {
+        try
+        {
+            undoManager.undo();
+        }
+        catch (Exception e)
+        {
+            ExceptionHandler.log(e);
+        }
+    }
+
+    public void redo()
+    {
+        try
+        {
+            undoManager.redo();
+        }
+        catch (Exception e)
+        {
+            ExceptionHandler.log(e);
+        }
+    }
+
+    public UndoListener getUndoListener()
+    {
+        return undoListener;
+    }
+
+    public boolean canUndo()
+    {
+        return undoManager.canUndo();
+    }
+
+    public boolean canRedo()
+    {
+        return undoManager.canRedo();
     }
 }

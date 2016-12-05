@@ -1,5 +1,6 @@
 package com.javarush.test.level33.lesson15.big01;
 
+import com.javarush.test.level33.lesson15.big01.strategies.HashMapStorageStrategy;
 import com.javarush.test.level33.lesson15.big01.strategies.StorageStrategy;
 
 import java.util.Date;
@@ -69,6 +70,7 @@ public class Solution {
      6.2.3.5.	Замерять и выводить время необходимое для отработки метода
      getStrings для заданной стратегии и полученного в предыдущем пункте
      множества идентификаторов.
+
      6.2.3.6.	Сравнивать одинаковое ли содержимое множества строк, которое было
      сгенерировано и множества, которое было возвращено методом
      getStrings. Если множества одинаковы, то выведи "Тест пройден.",
@@ -83,7 +85,31 @@ public class Solution {
         }
         Shortener shortener = new Shortener(strategy);
 
-        Date startTest = new Date();
+        Date startGetIds = new Date();
+        Set<Long> setIds = getIds(shortener, stringSet);
+        Date finishGetIds = new Date();
+        long spendGetIdsTime = finishGetIds.getTime() - startGetIds.getTime();
+        System.out.println("Время, затраченное на getIds: " + spendGetIdsTime);
 
+        Date startGetStrings = new Date();
+        Set<String> setStrings = getStrings(shortener, setIds);
+        Date finishGetStrings = new Date();
+        long spendGetStringsTime = finishGetStrings.getTime() - startGetStrings.getTime();
+        System.out.println("Время, затраченное на getStrings: " + spendGetStringsTime);
+
+        if (setStrings.size() == stringSet.size())
+            System.out.println("Тест пройден.");
+        else
+            System.out.println("Тест не пройден.");
+    }
+    /**
+     6.2.4.	Добавь метод main(). Внутри метода протестируй стратегию
+     HashMapStorageStrategy с помощью 10000 элементов.
+     6.3.	Проверь, что программа работает и тест пройден.
+     */
+    public static void main (String[] args)
+    {
+        HashMapStorageStrategy hashMapStorageStrategy = new HashMapStorageStrategy();
+        testStrategy(hashMapStorageStrategy, 10000);
     }
 }

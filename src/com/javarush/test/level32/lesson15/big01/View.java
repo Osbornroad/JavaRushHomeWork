@@ -5,6 +5,7 @@ import com.javarush.test.level32.lesson15.big01.listeners.TabbedPaneChangeListen
 import com.javarush.test.level32.lesson15.big01.listeners.UndoListener;
 
 import javax.swing.*;
+import javax.swing.text.html.HTMLDocument;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -50,9 +51,49 @@ public class View extends JFrame implements ActionListener{
         this.controller = controller;
     }
 
+    /**
+     Реализуем метод actionPerformed(ActionEvent actionEvent) у представления, этот метод
+     наследуется от интерфейса ActionListener и будет вызваться при выборе пунктов меню, у
+     которых наше представление указано в виде слушателя событий.
+     19.1.	Получи из события команду с помощью метода getActionCommand(). Это будет
+     обычная строка. По этой строке ты можешь понять какой пункт меню создал данное
+     событие.
+     19.2.	Если это команда "Новый", вызови у контроллера метод createNewDocument(). В этом
+     пункте и далее, если необходимого метода в контроллере еще нет - создай заглушки.
+     19.3.	Если это команда "Открыть", вызови метод openDocument().
+
+     19.4.	Если "Сохранить", то вызови saveDocument().
+     19.5.	Если "Сохранить как..." - saveDocumentAs().
+
+     19.6.	Если "Выход" - exit().
+     19.7.	Если "О программе", то вызови метод showAbout() у представления.
+     Проверь, что заработали пункты меню Выход и О программе.
+     */
+
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        String command = e.getActionCommand();
+        switch (command)
+        {
+            case "Новый":
+                controller.createNewDocument();
+                break;
+            case "Открыть":
+                controller.openDocument();
+                break;
+            case "Сохранить":
+                controller.saveDocument();
+                break;
+            case "Сохранить как...":
+                controller.saveDocumentAs();
+                break;
+            case "Выход":
+                controller.exit();
+                break;
+            case "О программе":
+                showAbout();
+                break;
+        }
     }
 
     /**
@@ -162,9 +203,26 @@ public class View extends JFrame implements ActionListener{
         pack();
     }
 
+    /**
+     Реализуй метод selectedTabChanged() представления. Этот метод вызывается, когда произошла
+     смена выбранной вкладки. Итак:
+     18.1.	Метод должен проверить, какая вкладка сейчас оказалась выбранной.
+     18.2.	Если выбрана вкладка с индексом 0 (html вкладка), значит нам нужно получить текст из
+     plainTextPane и установить его в контроллер с помощью метода setPlainText.
+     18.3.	Если выбрана вкладка с индексом 1 (вкладка с html текстом), то необходимо получить
+     текст у контроллера с помощью метода getPlainText() и установить его в панель
+     plainTextPane.
+     18.4.	Сбросить правки (вызвать метод resetUndo представления).
+     */
+
     public void selectedTabChanged()
     {
-
+        int index = tabbedPane.getSelectedIndex();
+        if (index == 0)
+            controller.setPlainText(plainTextPane.getText());
+        else if (index == 1)
+            plainTextPane.setText(controller.getPlainText());
+        resetUndo();
     }
 
     /**
@@ -232,5 +290,34 @@ public class View extends JFrame implements ActionListener{
     public boolean isHtmlTabSelected()
     {
         return tabbedPane.getSelectedIndex() == 0;
+    }
+
+    /**
+     14.1.	Добавь в класс представления метод selectHtmlTab(). Он должен:
+     14.1.1.	Выбирать html вкладку (переключаться на нее).
+     14.1.2.	Сбрасывать все правки с помощью метода, который ты реализовал ранее.
+     14.2.	Добавь в класс контроллера геттер для модели, в нашем случае это поле document.
+     14.3.	Добавь в представление метод update(), который должен получать документ у
+     контроллера и устанавливать его в панель редактирования htmlTextPane.
+
+     14.4.	Добавь в представление метод showAbout(), который должен показывать диалоговое
+     окно с информацией о программе. Информацию придумай сам, а вот тип сообщения
+     должен быть JOptionPane.INFORMATION_MESSAGE.
+     */
+
+    public void selectHtmlTab()
+    {
+        tabbedPane.setSelectedIndex(0);
+        resetUndo();
+    }
+
+    public void update()
+    {
+        htmlTextPane.setDocument(controller.getDocument());
+    }
+
+    public void showAbout()
+    {
+        JOptionPane.showMessageDialog(tabbedPane, "HTML редактор. 30 Nov 2016", "HTML редактор", JOptionPane.INFORMATION_MESSAGE);
     }
 }

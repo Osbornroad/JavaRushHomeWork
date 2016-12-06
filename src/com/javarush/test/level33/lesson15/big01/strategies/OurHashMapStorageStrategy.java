@@ -1,6 +1,7 @@
 package com.javarush.test.level33.lesson15.big01.strategies;
 
 /**
+<<<<<<< Updated upstream
  Добавь и реализуй класс OurHashMapStorageStrategy, используя класс Entry из
  предыдущей подзадачи. Класс OurHashMapStorageStrategy должен реализовывать
  интерфейс StorageStrategy.
@@ -135,4 +136,10 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
     public String getValue(Long key) {
         return null;
     }
+=======
+ * Created by User on 05.12.2016.
+ */
+public class OurHashMapStorageStrategy
+{
+>>>>>>> Stashed changes
 }

@@ -1,6 +1,10 @@
 package com.javarush.test.level33.lesson15.big01;
 
 import com.javarush.test.level33.lesson15.big01.strategies.*;
+import com.javarush.test.level33.lesson15.big01.tests.FunctionalTest;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -122,5 +126,15 @@ public class Solution {
 
         HashBiMapStorageStrategy hashBiMapStorageStrategy = new HashBiMapStorageStrategy();
         testStrategy(hashBiMapStorageStrategy, 10000);
+
+        DualHashBidiMapStorageStrategy dualHashBidiMapStorageStrategy = new DualHashBidiMapStorageStrategy();
+        testStrategy(dualHashBidiMapStorageStrategy, 10000);
+
+        Result result = JUnitCore.runClasses(FunctionalTest.class);
+        for (Failure failure : result.getFailures())
+        {
+            System.out.println(failure.toString());
+        }
+        System.out.println(result.wasSuccessful());
     }
 }

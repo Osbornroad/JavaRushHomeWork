@@ -10,8 +10,8 @@ import static com.javarush.test.level34.lesson15.big01.model.Model.FIELD_SELL_SI
  */
 public abstract class GameObject
 {
-    private int x;
-    private int y;
+    protected int x;
+    protected int y;
     private int width;
     private int height;
 

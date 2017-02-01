@@ -3,7 +3,6 @@ package com.javarush.test.level34.lesson15.big01.model;
 import com.javarush.test.level34.lesson15.big01.controller.EventListener;
 
 import java.nio.file.Paths;
-import java.util.Set;
 
 public class Model
 {
@@ -40,7 +39,26 @@ public class Model
 
     public void move(Direction direction)
     {
-
+        Player player = gameObjects.getPlayer();
+        if (checkWallCollision(player, direction))
+            return;
+        if (checkBoxCollision(direction))
+            return;
+        int count = FIELD_SELL_SIZE;
+        switch (direction){
+            case LEFT:
+                player.move(-count,0);
+                break;
+            case RIGHT:
+                player.move(count,0);
+                break;
+            case UP:
+                player.move(0,-count);
+                break;
+            case DOWN:
+                player.move(0,count);
+        }
+        checkCompletion();
     }
 
     public boolean checkWallCollision(CollisionObject gameObject, Direction direction)
@@ -57,48 +75,69 @@ public class Model
 
     public boolean checkBoxCollision(Direction direction)
     {
-        Player player = gameObjects.getPlayer();
-        if (checkWallCollision(player, direction))
-            return true;
 
-        for (Box box : gameObjects.getBoxes())
+        Player player = gameObjects.getPlayer();
+
+        GameObject stoped = null;
+        for (GameObject gameObject : gameObjects.getAll())
         {
-            if (player.isCollision(box, direction))
+            if (!(gameObject instanceof Player) && !(gameObject instanceof Home) && player.isCollision(gameObject, direction))
             {
-                for (Box anotherBox : gameObjects.getBoxes())
+                stoped = gameObject;
+            }
+        }
+
+        if ((stoped == null))
+        {
+            return false;
+        }
+        if (stoped instanceof Box)
+        {
+            Box stopedBox = (Box) stoped;
+            if (checkWallCollision(stopedBox, direction))
+            {
+                return true;
+            }
+            for (Box box : gameObjects.getBoxes())
+            {
+                if (stopedBox.isCollision(box, direction))
                 {
-                    if (box.isCollision(anotherBox, direction))
-                        return true;
-                    else
-                    {
-                        int x = 0;
-                        int y = 0;
-                        switch (direction)
-                        {
-                            case LEFT:
-                                x = - FIELD_SELL_SIZE;
-                                break;
-                            case UP:
-                                y = - FIELD_SELL_SIZE;
-                                break;
-                            case RIGHT:
-                                x = FIELD_SELL_SIZE;
-                                break;
-                            case DOWN:
-                                y = FIELD_SELL_SIZE;
-                                break;
-                        }
-                        box.move(x, y);
-                        return false;
-                    }
+                    return true;
                 }
+            }
+            switch (direction)
+            {
+                case LEFT:
+                    stopedBox.move(-FIELD_SELL_SIZE, 0);
+                    break;
+                case RIGHT:
+                    stopedBox.move(FIELD_SELL_SIZE, 0);
+                    break;
+                case UP:
+                    stopedBox.move(0, -FIELD_SELL_SIZE);
+                    break;
+                case DOWN:
+                    stopedBox.move(0, FIELD_SELL_SIZE);
             }
         }
         return false;
     }
-
     public void checkCompletion()
     {
-
+        for (Home home : gameObjects.getHomes())
+        {
+            boolean isOccupated = false;
+            for (Box box : gameObjects.getBoxes())
+            {
+                if ((home.getX() == box.getX()) && (home.getY() == box.getY()))
+                {
+                    isOccupated = true;
+                    break;
+                }
+            }
+            if (isOccupated == false)
+                return;
+        }
+        eventListener.levelCompleted(currentLevel);
     }
 }
